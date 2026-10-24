@@ -26,4 +26,9 @@ describe("scoreOf", () => {
       assert(scoreOf(first, miss, third) === 16);
     });
   });
+  describe("お題に書かれていないことの扱い", () => {
+    it("異なる投てきで同じ番号のスキットルを倒してもよい", () => {
+      assert(scoreOf([skittle(5)], [skittle(5)]) === 10);
+    });
+  });
 });
