@@ -16,6 +16,9 @@ describe("pointsOf", () => {
     it("5番と8番を倒したら2点", () => {
       assert(pointsOf(skittle(5), skittle(8)) === 2);
     });
+    it("3本倒したら3点", () => {
+      assert(pointsOf(skittle(3), skittle(7), skittle(12)) === 3);
+    });
   });
   describe("スキットルを1本も倒さなかった場合", () => {
     it("0点", () => {
