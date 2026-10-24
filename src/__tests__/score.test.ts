@@ -77,5 +77,8 @@ describe("scoreHistoryOf", () => {
     it("1回も投てきしていないときは空の配列", () => {
       assert.deepEqual(scoreHistoryOf(), []);
     });
+    it("1回だけ投てきしたときは、その投てきの点数だけの配列", () => {
+      assert.deepEqual(scoreHistoryOf([skittle(12)]), [12]);
+    });
   });
 });
