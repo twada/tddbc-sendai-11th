@@ -41,4 +41,20 @@ describe("scoreOf", () => {
       });
     });
   });
+  // 以下は型レベルの決定。検証は `npm run typecheck` が担う。
+  // 型検査だけが目的なので、呼び出しは関数に包んで実行しない。
+  describe("投てきはスキットルの配列として渡す", () => {
+    it("スキットルを投てきとして直接渡せない", () => {
+      void (() => {
+        // @ts-expect-error Skittle は Throw ではない(正しくは [skittle(5)])
+        scoreOf(skittle(5));
+      });
+    });
+    it("数値を投てきとして渡せない", () => {
+      void (() => {
+        // @ts-expect-error number は Throw ではない
+        scoreOf(5);
+      });
+    });
+  });
 });
