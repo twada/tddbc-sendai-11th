@@ -81,4 +81,11 @@ describe("scoreHistoryOf", () => {
       assert.deepEqual(scoreHistoryOf([skittle(12)]), [12]);
     });
   });
+  describe("scoreOf との整合性", () => {
+    it("推移の最後の値は、同じ投てきの現在の得点と一致する", () => {
+      const throws: readonly Throw[] = [[skittle(1), skittle(2)], [skittle(11)], [], [skittle(6)]];
+      const history = scoreHistoryOf(...throws);
+      assert(history.at(-1) === scoreOf(...throws));
+    });
+  });
 });
