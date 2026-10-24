@@ -34,5 +34,11 @@ describe("scoreOf", () => {
       const twelve = [skittle(12)];
       assert(scoreOf(twelve, twelve, twelve, twelve, twelve) === 60);
     });
+    it("2回目の投てきに重複があれば、1回目が正常でもエラーになる", () => {
+      assert.throws(() => scoreOf([skittle(3)], [skittle(5), skittle(5)]), {
+        name: "Error",
+        message: "スキットル 5 が重複しています",
+      });
+    });
   });
 });
