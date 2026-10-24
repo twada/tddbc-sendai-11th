@@ -1,0 +1,26 @@
+{
+  "name": "tddbc-sendai-11th",
+  "version": "0.0.0",
+  "private": true,
+  "description": "TDDBC 仙台 11th: 限定仕様のモルックを題材にした TDD 演習",
+  "type": "module",
+  "scripts": {
+    "test": "node --enable-source-maps --disable-warning=ExperimentalWarning --import @power-assert/node --test \"src/__tests__/**/*.test.ts\"",
+    "test:watch": "node --enable-source-maps --disable-warning=ExperimentalWarning --import @power-assert/node --test --watch \"src/__tests__/**/*.test.ts\"",
+    "lint": "oxlint",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "typecheck": "tsc",
+    "check": "npm run typecheck && npm run lint && npm run fmt:check && npm test"
+  },
+  "devDependencies": {
+    "@power-assert/node": "^0.7.2",
+    "@types/node": "^26.6.5",
+    "oxfmt": "^0.74.0",
+    "oxlint": "^1.89.0",
+    "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=26"
+  }
+}
