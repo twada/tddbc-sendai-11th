@@ -4,8 +4,8 @@ export type Points = number;
 
 export function pointsOf(...skittles: readonly Skittle[]): Points {
   assertNoDuplicates(skittles);
-  const [first] = skittles;
-  if (skittles.length === 1 && first !== undefined) {
+  const [first, ...rest] = skittles;
+  if (first !== undefined && rest.length === 0) {
     return first.number;
   }
   return skittles.length;
