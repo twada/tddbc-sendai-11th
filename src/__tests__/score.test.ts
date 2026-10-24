@@ -96,4 +96,14 @@ describe("scoreHistoryOf", () => {
       });
     });
   });
+  // 以下は型レベルの決定。検証は `npm run typecheck` が担う。
+  describe("得点の推移は書き換えられない", () => {
+    it("戻り値の配列に要素を追加できない", () => {
+      void (() => {
+        const history = scoreHistoryOf([skittle(5)]);
+        // @ts-expect-error readonly Score[] には push がない
+        history.push(10);
+      });
+    });
+  });
 });
