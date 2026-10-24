@@ -10,5 +10,5 @@ export function pointsOf(...skittles: readonly Skittle[]): Points {
   if (skittles.length === 0) {
     return 0;
   }
-  return 2;
+  return skittles.length;
 }
