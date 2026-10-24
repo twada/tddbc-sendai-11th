@@ -1,19 +1,21 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { skittle, type Skittle } from "../skittle.ts";
-import { scoreOf } from "../score.ts";
+import { skittle } from "../skittle.ts";
+import { scoreOf, type Throw } from "../score.ts";
 
 describe("scoreOf", () => {
-  it("1回も投てきしていないときは0点", () => {
-    assert(scoreOf() === 0);
-  });
-  it("1回目に5本倒すと5点", () => {
-    assert(scoreOf([skittle(1), skittle(2), skittle(3), skittle(4), skittle(5)]) === 5);
-  });
-  it("2回目に11番を1本倒すと16点", () => {
-    const first = [skittle(1), skittle(2), skittle(3), skittle(4), skittle(5)];
-    const second = [skittle(11)];
-    assert(scoreOf(first, second) === 16);
+  describe("お題の例", () => {
+    it("1回も投てきしていないときは0点", () => {
+      assert(scoreOf() === 0);
+    });
+    it("1回目に5本倒すと5点", () => {
+      assert(scoreOf([skittle(1), skittle(2), skittle(3), skittle(4), skittle(5)]) === 5);
+    });
+    it("2回目に11番を1本倒すと16点", () => {
+      const first = [skittle(1), skittle(2), skittle(3), skittle(4), skittle(5)];
+      const second = [skittle(11)];
+      assert(scoreOf(first, second) === 16);
+    });
   });
   describe("1本も倒さなかった投てき", () => {
     it("1回投てきして1本も倒さなかったら0点(投てき0回とは区別する)", () => {
@@ -21,7 +23,7 @@ describe("scoreOf", () => {
     });
     it("途中に1本も倒さなかった投てきが挟まってもよい", () => {
       const first = [skittle(1), skittle(2), skittle(3), skittle(4), skittle(5)];
-      const miss: Skittle[] = [];
+      const miss: Throw = [];
       const third = [skittle(11)];
       assert(scoreOf(first, miss, third) === 16);
     });
