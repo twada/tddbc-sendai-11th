@@ -45,3 +45,37 @@ describe("scoreHistoryOf の性質", () => {
     });
   });
 });
+
+describe("scoreOf の性質", () => {
+  describe("得点の積み重ね", () => {
+    it("前半と後半に分けた得点の和は、全体の得点と同じ", () => {
+      fc.assert(
+        fc.property(arbitraryThrows, arbitraryThrows, (former, latter) => {
+          assert(scoreOf(...former, ...latter) === scoreOf(...former) + scoreOf(...latter));
+        }),
+      );
+    });
+    it("投てきが増えても、それまでの推移は変わらない", () => {
+      fc.assert(
+        fc.property(arbitraryThrows, arbitraryThrows, (former, latter) => {
+          assert.deepEqual(
+            scoreHistoryOf(...former, ...latter).slice(0, former.length),
+            scoreHistoryOf(...former),
+          );
+        }),
+      );
+    });
+    it("投てきの順序を入れ替えても、現在の得点は変わらない", () => {
+      const withShuffled = arbitraryThrows.chain((throws) =>
+        fc
+          .shuffledSubarray([...throws], { minLength: throws.length })
+          .map((shuffled) => ({ throws, shuffled })),
+      );
+      fc.assert(
+        fc.property(withShuffled, ({ throws, shuffled }) => {
+          assert(scoreOf(...shuffled) === scoreOf(...throws));
+        }),
+      );
+    });
+  });
+});
