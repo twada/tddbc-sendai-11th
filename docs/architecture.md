@@ -8,15 +8,18 @@
 
 ## 技術スタック
 
-| 項目               | 採用                                            | ADR                                                                                                    |
-| ------------------ | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| 実行環境           | Node 26(ローカルにインストール済みのもの)       | —                                                                                                      |
-| 言語               | TypeScript 7                                    | [0002](adr/0002-run-typescript-with-type-stripping.md), [0006](adr/0006-use-tsc-for-typecheck-only.md) |
-| 実行方式           | Node の type stripping でコンパイルせず直接実行 | [0002](adr/0002-run-typescript-with-type-stripping.md)                                                 |
-| テストランナー     | `node:test`                                     | [0003](adr/0003-use-node-test-runner.md)                                                               |
-| アサーション       | `node:assert/strict` + `@power-assert/node`     | [0004](adr/0004-use-power-assert.md)                                                                   |
-| linter / formatter | oxlint / oxfmt                                  | [0005](adr/0005-use-oxlint-and-oxfmt.md)                                                               |
-| 型検査             | `tsc`(`noEmit`)                                 | [0006](adr/0006-use-tsc-for-typecheck-only.md)                                                         |
+| 項目               | 採用                                                                | ADR                                                                                                    |
+| ------------------ | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| 実行環境           | Node 26(ローカルにインストール済みのもの)                           | —                                                                                                      |
+| 言語               | TypeScript 7                                                        | [0002](adr/0002-run-typescript-with-type-stripping.md), [0006](adr/0006-use-tsc-for-typecheck-only.md) |
+| 実行方式           | Node の type stripping でコンパイルせず直接実行                     | [0002](adr/0002-run-typescript-with-type-stripping.md)                                                 |
+| テストランナー     | `node:test`                                                         | [0003](adr/0003-use-node-test-runner.md)                                                               |
+| アサーション       | `node:assert/strict` + `@power-assert/node`                         | [0004](adr/0004-use-power-assert.md)                                                                   |
+| linter / formatter | oxlint / oxfmt                                                      | [0005](adr/0005-use-oxlint-and-oxfmt.md)                                                               |
+| 型検査             | `tsc`(`noEmit`)                                                     | [0006](adr/0006-use-tsc-for-typecheck-only.md)                                                         |
+| カバレッジ         | `node --test` 組み込み(`--experimental-test-coverage`)。100% を要求 | [0011](adr/0011-measure-coverage-with-node-test-runner.md)                                             |
+| mutation testing   | StrykerJS 10.0.0 + tap-runner。mutation score 100% を要求           | [0012](adr/0012-mutation-testing-with-stryker.md)                                                      |
+| CI                 | GitHub Actions(`.github/workflows/ci.yml`)                          | [0013](adr/0013-run-ci-on-github-actions.md)                                                           |
 
 ## ディレクトリ構成
 
@@ -30,26 +33,35 @@
 │       ├── points.test.ts   点数計算と重複検証のテスト
 │       ├── score.test.ts    得点計算のテスト(型レベルテストを含む)
 │       └── skittle.test.ts  スキットルの型レベルテスト(番号の範囲、数値との区別)
+├── .github/workflows/
+│   └── ci.yml           GitHub Actions の CI
 ├── docs/
 │   ├── architecture.md  このファイル
 │   ├── adr/             Architecture Decision Records
 │   └── problem/         出題者からのお題(原文のまま保存)
 ├── tsconfig.json        型検査の設定(emit しない)
 ├── .oxlintrc.json       oxlint の設定
-└── .oxfmtrc.json        oxfmt の設定
+├── .oxfmtrc.json        oxfmt の設定
+└── stryker.config.mjs   StrykerJS(mutation testing)の設定
 ```
 
 ## コマンド
 
-| コマンド             | 内容                                           |
-| -------------------- | ---------------------------------------------- |
-| `npm test`           | `src/__tests__/**/*.test.ts` を実行            |
-| `npm run test:watch` | 監視モードでテストを実行                       |
-| `npm run typecheck`  | `tsc` で型検査                                 |
-| `npm run lint`       | oxlint で静的解析                              |
-| `npm run fmt`        | oxfmt で整形                                   |
-| `npm run fmt:check`  | 整形の差分検出のみ                             |
-| `npm run check`      | typecheck → lint → fmt:check → test を一括実行 |
+| コマンド                | 内容                                                                                                   |
+| ----------------------- | ------------------------------------------------------------------------------------------------------ |
+| `npm test`              | `src/__tests__/**/*.test.ts` を実行                                                                    |
+| `npm run test:watch`    | 監視モードでテストを実行                                                                               |
+| `npm run test:coverage` | カバレッジ付きでテストを実行。行・分岐・関数のいずれかが 100% 未満なら失敗                             |
+| `npm run mutation`      | StrykerJS で mutation testing。score が 100% 未満なら失敗。レポートは `reports/mutation/mutation.html` |
+| `npm run typecheck`     | `tsc` で型検査                                                                                         |
+| `npm run lint`          | oxlint で静的解析                                                                                      |
+| `npm run fmt`           | oxfmt で整形                                                                                           |
+| `npm run fmt:check`     | 整形の差分検出のみ                                                                                     |
+| `npm run check`         | typecheck → lint → fmt:check → test:coverage を一括実行                                                |
+
+## CI
+
+main への push とすべての PR で、GitHub Actions が typecheck / lint / fmt:check / test:coverage / mutation を順に実行する。mutation testing の HTML レポートは artifact(`mutation-report`)として保存される。
 
 ## コードを書くときの制約
 
