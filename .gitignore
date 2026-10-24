@@ -132,3 +132,7 @@ dist
 
 # Personal notes
 prompts.md
+
+# Stryker (mutation testing)
+.stryker-tmp/
+reports/

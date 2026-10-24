@@ -8,6 +8,7 @@
     "test": "node --enable-source-maps --disable-warning=ExperimentalWarning --import @power-assert/node --test \"src/__tests__/**/*.test.ts\"",
     "test:watch": "node --enable-source-maps --disable-warning=ExperimentalWarning --import @power-assert/node --test --watch \"src/__tests__/**/*.test.ts\"",
     "test:coverage": "node --enable-source-maps --disable-warning=ExperimentalWarning --import @power-assert/node --experimental-test-coverage --test-coverage-include=\"src/**/*.ts\" --test-coverage-exclude=\"src/__tests__/**\" --test-coverage-include-all --test-coverage-lines=100 --test-coverage-branches=100 --test-coverage-functions=100 --test \"src/__tests__/**/*.test.ts\"",
+    "mutation": "stryker run",
     "lint": "oxlint",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
@@ -16,6 +17,8 @@
   },
   "devDependencies": {
     "@power-assert/node": "^0.7.2",
+    "@stryker-mutator/core": "10.0.0",
+    "@stryker-mutator/tap-runner": "10.0.0",
     "@types/node": "^26.6.5",
     "oxfmt": "^0.74.0",
     "oxlint": "^1.89.0",
