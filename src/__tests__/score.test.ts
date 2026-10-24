@@ -73,4 +73,9 @@ describe("scoreHistoryOf", () => {
       assert.deepEqual(scoreHistoryOf(first, second, third, fourth), [5, 16, 16, 19]);
     });
   });
+  describe("境界", () => {
+    it("1回も投てきしていないときは空の配列", () => {
+      assert.deepEqual(scoreHistoryOf(), []);
+    });
+  });
 });
