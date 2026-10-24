@@ -7,11 +7,12 @@
   "scripts": {
     "test": "node --enable-source-maps --disable-warning=ExperimentalWarning --import @power-assert/node --test \"src/__tests__/**/*.test.ts\"",
     "test:watch": "node --enable-source-maps --disable-warning=ExperimentalWarning --import @power-assert/node --test --watch \"src/__tests__/**/*.test.ts\"",
+    "test:coverage": "node --enable-source-maps --disable-warning=ExperimentalWarning --import @power-assert/node --experimental-test-coverage --test-coverage-include=\"src/**/*.ts\" --test-coverage-exclude=\"src/__tests__/**\" --test-coverage-include-all --test-coverage-lines=100 --test-coverage-branches=100 --test-coverage-functions=100 --test \"src/__tests__/**/*.test.ts\"",
     "lint": "oxlint",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "typecheck": "tsc",
-    "check": "npm run typecheck && npm run lint && npm run fmt:check && npm test"
+    "check": "npm run typecheck && npm run lint && npm run fmt:check && npm run test:coverage"
   },
   "devDependencies": {
     "@power-assert/node": "^0.7.2",
