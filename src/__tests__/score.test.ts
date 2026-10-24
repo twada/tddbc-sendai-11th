@@ -15,4 +15,9 @@ describe("scoreOf", () => {
     const second = [skittle(11)];
     assert(scoreOf(first, second) === 16);
   });
+  describe("1本も倒さなかった投てき", () => {
+    it("1回投てきして1本も倒さなかったら0点(投てき0回とは区別する)", () => {
+      assert(scoreOf([]) === 0);
+    });
+  });
 });
