@@ -3,6 +3,7 @@
 - ステータス: 承認済み
 - 日付: 2026-10-24
 - [ADR 0008](0008-guarantee-skittle-number-range-by-type.md) を置き換える
+- [ADR 0015](0015-distinguish-assertions-from-validation.md) で補足(型で保証した前提を、表明で実行時にも確かめる)
 
 ## コンテキスト
 
