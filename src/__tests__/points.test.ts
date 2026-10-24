@@ -32,5 +32,11 @@ describe("pointsOf", () => {
         message: "スキットル 5 が重複しています",
       });
     });
+    it("離れた位置の重複でもエラーになる", () => {
+      assert.throws(() => pointsOf(skittle(5), skittle(8), skittle(5)), {
+        name: "Error",
+        message: "スキットル 5 が重複しています",
+      });
+    });
   });
 });
