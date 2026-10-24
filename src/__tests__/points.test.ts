@@ -12,4 +12,9 @@ describe("pointsOf", () => {
       assert(pointsOf(skittle(12)) === 12);
     });
   });
+  describe("スキットルを2本以上倒した場合", () => {
+    it("5番と8番を倒したら2点", () => {
+      assert(pointsOf(skittle(5), skittle(8)) === 2);
+    });
+  });
 });
