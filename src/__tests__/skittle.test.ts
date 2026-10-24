@@ -1,4 +1,5 @@
-// スキットルに関する型レベルの決定を `@ts-expect-error` で固定する。実行時には検証しない。
+// スキットルに関する型レベルの決定を `@ts-expect-error` で固定する。
+// いずれも静的に検証できる制約なので、実行時には検証しない(ADR 0009)。
 // このファイルの検証は `npm run typecheck` が担う(`@ts-expect-error` が不要になると tsc が失敗する)。
 import { describe, it } from "node:test";
 import { skittle } from "../skittle.ts";
