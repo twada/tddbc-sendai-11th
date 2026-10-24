@@ -88,4 +88,12 @@ describe("scoreHistoryOf", () => {
       assert(history.at(-1) === scoreOf(...throws));
     });
   });
+  describe("お題に書かれていないことの扱い", () => {
+    it("3回目の投てきに重複があれば、途中までの推移は返さずエラーになる", () => {
+      assert.throws(() => scoreHistoryOf([skittle(3)], [skittle(8)], [skittle(5), skittle(5)]), {
+        name: "Error",
+        message: "スキットル 5 が重複しています",
+      });
+    });
+  });
 });
