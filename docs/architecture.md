@@ -8,18 +8,19 @@
 
 ## 技術スタック
 
-| 項目               | 採用                                                                | ADR                                                                                                    |
-| ------------------ | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| 実行環境           | Node 26(ローカルにインストール済みのもの)                           | —                                                                                                      |
-| 言語               | TypeScript 7                                                        | [0002](adr/0002-run-typescript-with-type-stripping.md), [0006](adr/0006-use-tsc-for-typecheck-only.md) |
-| 実行方式           | Node の type stripping でコンパイルせず直接実行                     | [0002](adr/0002-run-typescript-with-type-stripping.md)                                                 |
-| テストランナー     | `node:test`                                                         | [0003](adr/0003-use-node-test-runner.md)                                                               |
-| アサーション       | `node:assert/strict` + `@power-assert/node`                         | [0004](adr/0004-use-power-assert.md)                                                                   |
-| linter / formatter | oxlint / oxfmt                                                      | [0005](adr/0005-use-oxlint-and-oxfmt.md)                                                               |
-| 型検査             | `tsc`(`noEmit`)                                                     | [0006](adr/0006-use-tsc-for-typecheck-only.md)                                                         |
-| カバレッジ         | `node --test` 組み込み(`--experimental-test-coverage`)。100% を要求 | [0011](adr/0011-measure-coverage-with-node-test-runner.md)                                             |
-| mutation testing   | StrykerJS 10.0.0 + tap-runner。mutation score 100% を要求           | [0012](adr/0012-mutation-testing-with-stryker.md)                                                      |
-| CI                 | GitHub Actions(`.github/workflows/ci.yml`)                          | [0013](adr/0013-run-ci-on-github-actions.md)                                                           |
+| 項目                   | 採用                                                                | ADR                                                                                                    |
+| ---------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| 実行環境               | Node 26(ローカルにインストール済みのもの)                           | —                                                                                                      |
+| 言語                   | TypeScript 7                                                        | [0002](adr/0002-run-typescript-with-type-stripping.md), [0006](adr/0006-use-tsc-for-typecheck-only.md) |
+| 実行方式               | Node の type stripping でコンパイルせず直接実行                     | [0002](adr/0002-run-typescript-with-type-stripping.md)                                                 |
+| テストランナー         | `node:test`                                                         | [0003](adr/0003-use-node-test-runner.md)                                                               |
+| アサーション           | `node:assert/strict` + `@power-assert/node`                         | [0004](adr/0004-use-power-assert.md)                                                                   |
+| linter / formatter     | oxlint / oxfmt                                                      | [0005](adr/0005-use-oxlint-and-oxfmt.md)                                                               |
+| 型検査                 | `tsc`(`noEmit`)                                                     | [0006](adr/0006-use-tsc-for-typecheck-only.md)                                                         |
+| カバレッジ             | `node --test` 組み込み(`--experimental-test-coverage`)。100% を要求 | [0011](adr/0011-measure-coverage-with-node-test-runner.md)                                             |
+| mutation testing       | StrykerJS 10.0.0 + tap-runner。mutation score 100% を要求           | [0012](adr/0012-mutation-testing-with-stryker.md)                                                      |
+| Property-based Testing | fast-check。例によるテストを補う                                    | [0016](adr/0016-property-based-testing-with-fast-check.md)                                             |
+| CI                     | GitHub Actions(`.github/workflows/ci.yml`)                          | [0013](adr/0013-run-ci-on-github-actions.md)                                                           |
 
 ## ディレクトリ構成
 
@@ -30,8 +31,11 @@
 │   ├── points.ts        点数(Points / pointsOf)
 │   ├── score.ts         得点(Throw / Score / scoreOf / scoreHistoryOf)
 │   └── __tests__/       テストコード(*.test.ts)
+│       ├── arbitraries.ts   PBT の入力の生成器(arbitrary)
 │       ├── points.test.ts   点数計算と重複検証のテスト
+│       ├── points.property.test.ts  点数計算の性質(PBT)
 │       ├── score.test.ts    得点計算のテスト(型レベルテストを含む)
+│       ├── score.property.test.ts   得点計算の性質(PBT)
 │       └── skittle.test.ts  スキットルの型レベルテスト(番号の範囲、数値との区別)
 ├── .github/workflows/
 │   └── ci.yml           GitHub Actions の CI
@@ -59,6 +63,14 @@
 | `npm run fmt:check`     | 整形の差分検出のみ                                                                                     |
 | `npm run check`         | typecheck → lint → fmt:check → test:coverage を一括実行                                                |
 
+## テストの種類
+
+| 種類              | ファイル             | 内容                                                                                               |
+| ----------------- | -------------------- | -------------------------------------------------------------------------------------------------- |
+| 例によるテスト    | `*.test.ts`          | お題の例と、ペアで決めたこと(入力の扱い、エラーの表現など)を、具体的な入力と期待値で記録する       |
+| 型レベルテスト    | `*.test.ts` の一部   | `@ts-expect-error` で型の決定を固定する。呼び出しは実行しない。`npm run typecheck` で検証する      |
+| 性質のテスト(PBT) | `*.property.test.ts` | fast-check でランダムに生成した入力について、どの入力でも成り立つ性質を確かめる。seed は固定しない |
+
 ## CI
 
 main への push とすべての PR で、GitHub Actions が typecheck / lint / fmt:check / test:coverage / mutation を順に実行する。mutation testing の HTML レポートは artifact(`mutation-report`)として保存される。
@@ -76,13 +88,13 @@ main への push とすべての PR で、GitHub Actions が typecheck / lint / 
 
 ### 型
 
-| 型              | 定義                                 | 説明                                                                             |
-| --------------- | ------------------------------------ | -------------------------------------------------------------------------------- |
-| `SkittleNumber` | `1 \| 2 \| … \| 12`                  | スキットル番号。範囲外の番号は型エラー。静的に検証できるので実行時の検証はしない |
-| `Skittle`       | `{ readonly number: SkittleNumber }` | スキットル。数値として直接扱えないようオブジェクトで包む                         |
-| `Points`        | `number`                             | 1 回の投てきで得られる点数                                                       |
-| `Throw`         | `readonly Skittle[]`                 | 1 回の投てきで倒したスキットル                                                   |
-| `Score`         | `number`                             | チームの得点。投てきの点数の合計                                                 |
+| 型              | 定義                                 | 説明                                                                          |
+| --------------- | ------------------------------------ | ----------------------------------------------------------------------------- |
+| `SkittleNumber` | `1 \| 2 \| … \| 12`                  | スキットル番号。範囲外の番号は型エラー。実行時は `skittle` の表明で再確認する |
+| `Skittle`       | `{ readonly number: SkittleNumber }` | スキットル。数値として直接扱えないようオブジェクトで包む                      |
+| `Points`        | `number`                             | 1 回の投てきで得られる点数                                                    |
+| `Throw`         | `readonly Skittle[]`                 | 1 回の投てきで倒したスキットル                                                |
+| `Score`         | `number`                             | チームの得点。投てきの点数の合計                                              |
 
 ### 関数
 
@@ -106,8 +118,10 @@ main への push とすべての PR で、GitHub Actions が typecheck / lint / 
 
 入力の制約は可能な限り静的に検証し、できなければ実行時に検証する([ADR 0009](adr/0009-validate-statically-where-possible-otherwise-at-runtime.md))。
 
-| 制約                                               | 検証方法 | 違反したとき                                                                                                                                             |
-| -------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| スキットル番号は 1〜12                             | 型       | 型エラー                                                                                                                                                 |
-| 1 回の投てきの中で同じ番号のスキットルは重複しない | 実行時   | `Error`(例: 「スキットル 5 が重複しています」)。最初の重複のみ報告。`scoreOf` / `scoreHistoryOf` でも同じ `Error` になり、途中までの得点や推移は返さない |
-| 投てきはスキットルの配列として渡す                 | 型       | 型エラー                                                                                                                                                 |
+また、検証と表明を区別する([ADR 0015](adr/0015-distinguish-assertions-from-validation.md))。検証は呼び出し側の誤りを `Error` で伝え、仕様としてテストする。表明は型で保証した前提を実行時にも確かめ、破られたら `AssertionError` を投げる。表明は正しいプログラムでは失敗しないのでテストせず、mutation testing の対象からも外す(`// Stryker disable all` 〜 `// Stryker restore all`)。
+
+| 制約                                               | 検証方法                 | 違反したとき                                                                                                                                             |
+| -------------------------------------------------- | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| スキットル番号は 1〜12 の整数                      | 型(実行時は表明で再確認) | 型エラー。型を偽ったり JavaScript から呼んだりすると、`skittle` が `AssertionError` を投げる                                                             |
+| 1 回の投てきの中で同じ番号のスキットルは重複しない | 実行時                   | `Error`(例: 「スキットル 5 が重複しています」)。最初の重複のみ報告。`scoreOf` / `scoreHistoryOf` でも同じ `Error` になり、途中までの得点や推移は返さない |
+| 投てきはスキットルの配列として渡す                 | 型                       | 型エラー                                                                                                                                                 |
