@@ -30,5 +30,9 @@ describe("scoreOf", () => {
     it("異なる投てきで同じ番号のスキットルを倒してもよい", () => {
       assert(scoreOf([skittle(5)], [skittle(5)]) === 10);
     });
+    it("得点に上限はない", () => {
+      const twelve = [skittle(12)];
+      assert(scoreOf(twelve, twelve, twelve, twelve, twelve) === 60);
+    });
   });
 });
