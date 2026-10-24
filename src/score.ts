@@ -14,5 +14,9 @@ export function scoreHistoryOf(...throws: readonly Throw[]): readonly Score[] {
   if (throws.length === 0) {
     return [];
   }
-  return [5, 16, 16, 19];
+  const points = throws.map((knocked) => pointsOf(...knocked));
+  return points.reduce<readonly Score[]>(
+    (history, latest) => [...history, (history.at(-1) ?? 0) + latest],
+    [],
+  );
 }
