@@ -28,7 +28,8 @@
 │       └── hello.test.ts
 ├── docs/
 │   ├── architecture.md  このファイル
-│   └── adr/             Architecture Decision Records
+│   ├── adr/             Architecture Decision Records
+│   └── problem/         出題者からのお題(原文のまま保存)
 ├── tsconfig.json        型検査の設定(emit しない)
 ├── .oxlintrc.json       oxlint の設定
 └── .oxfmtrc.json        oxfmt の設定
