@@ -8,5 +8,8 @@ describe("pointsOf", () => {
     it("5番を倒したら5点", () => {
       assert(pointsOf(skittle(5)) === 5);
     });
+    it("12番を倒したら12点", () => {
+      assert(pointsOf(skittle(12)) === 12);
+    });
   });
 });
