@@ -27,7 +27,7 @@
 │   ├── points.ts        点数(Points / pointsOf)
 │   └── __tests__/       テストコード(*.test.ts)
 │       ├── points.test.ts   点数計算のテスト
-│       └── skittle.test.ts  スキットル番号の範囲の型レベルテスト
+│       └── skittle.test.ts  スキットルの型レベルテスト(番号の範囲、数値との区別)
 ├── docs/
 │   ├── architecture.md  このファイル
 │   ├── adr/             Architecture Decision Records
