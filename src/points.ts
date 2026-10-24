@@ -7,8 +7,5 @@ export function pointsOf(...skittles: readonly Skittle[]): Points {
   if (skittles.length === 1 && first !== undefined) {
     return first.number;
   }
-  if (skittles.length === 0) {
-    return 0;
-  }
   return skittles.length;
 }
