@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { skittle } from "../skittle.ts";
-import { scoreOf, type Throw } from "../score.ts";
+import { scoreHistoryOf, scoreOf, type Throw } from "../score.ts";
 
 describe("scoreOf", () => {
   describe("お題の例", () => {
@@ -59,6 +59,18 @@ describe("scoreOf", () => {
         // @ts-expect-error number は Throw ではない
         scoreOf(5);
       });
+    });
+  });
+});
+
+describe("scoreHistoryOf", () => {
+  describe("お題の例", () => {
+    it("各投てきが終了した時点の得点を順に返す", () => {
+      const first = [skittle(1), skittle(2), skittle(3), skittle(4), skittle(5)];
+      const second = [skittle(11)];
+      const third: Throw = [];
+      const fourth = [skittle(2), skittle(7), skittle(9)];
+      assert.deepEqual(scoreHistoryOf(first, second, third, fourth), [5, 16, 16, 19]);
     });
   });
 });
