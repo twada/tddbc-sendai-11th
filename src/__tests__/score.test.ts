@@ -1,7 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { skittle } from "../skittle.ts";
-import { scoreOf, type Throw } from "../score.ts";
+import { scoreHistoryOf, scoreOf, type Throw } from "../score.ts";
 
 describe("scoreOf", () => {
   describe("お題の例", () => {
@@ -28,10 +28,12 @@ describe("scoreOf", () => {
       assert(scoreOf(first, miss, third) === 16);
     });
   });
-  describe("お題に書かれていないことの扱い", () => {
+  describe("倒れたスキットルは投てきのたびに立て直す", () => {
     it("異なる投てきで同じ番号のスキットルを倒してもよい", () => {
       assert(scoreOf([skittle(5)], [skittle(5)]) === 10);
     });
+  });
+  describe("お題に書かれていないことの扱い", () => {
     it("得点に上限はない", () => {
       const twelve = [skittle(12)];
       assert(scoreOf(twelve, twelve, twelve, twelve, twelve) === 60);
@@ -56,6 +58,51 @@ describe("scoreOf", () => {
       void (() => {
         // @ts-expect-error number は Throw ではない
         scoreOf(5);
+      });
+    });
+  });
+});
+
+describe("scoreHistoryOf", () => {
+  describe("お題の例", () => {
+    it("各投てきが終了した時点の得点を順に返す", () => {
+      const first = [skittle(1), skittle(2), skittle(3), skittle(4), skittle(5)];
+      const second = [skittle(11)];
+      const third: Throw = [];
+      const fourth = [skittle(2), skittle(7), skittle(9)];
+      assert.deepEqual(scoreHistoryOf(first, second, third, fourth), [5, 16, 16, 19]);
+    });
+  });
+  describe("境界", () => {
+    it("1回も投てきしていないときは空の配列", () => {
+      assert.deepEqual(scoreHistoryOf(), []);
+    });
+    it("1回だけ投てきしたときは、その投てきの点数だけの配列", () => {
+      assert.deepEqual(scoreHistoryOf([skittle(12)]), [12]);
+    });
+  });
+  describe("scoreOf との整合性", () => {
+    it("推移の最後の値は、同じ投てきの現在の得点と一致する", () => {
+      const throws: readonly Throw[] = [[skittle(1), skittle(2)], [skittle(11)], [], [skittle(6)]];
+      const history = scoreHistoryOf(...throws);
+      assert(history.at(-1) === scoreOf(...throws));
+    });
+  });
+  describe("お題に書かれていないことの扱い", () => {
+    it("3回目の投てきに重複があれば、途中までの推移は返さずエラーになる", () => {
+      assert.throws(() => scoreHistoryOf([skittle(3)], [skittle(8)], [skittle(5), skittle(5)]), {
+        name: "Error",
+        message: "スキットル 5 が重複しています",
+      });
+    });
+  });
+  // 以下は型レベルの決定。検証は `npm run typecheck` が担う。
+  describe("得点の推移は書き換えられない", () => {
+    it("戻り値の配列に要素を追加できない", () => {
+      void (() => {
+        const history = scoreHistoryOf([skittle(5)]);
+        // @ts-expect-error readonly Score[] には push がない
+        history.push(10);
       });
     });
   });
