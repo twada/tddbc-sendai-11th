@@ -1,6 +1,6 @@
 # 0008. スキットル番号の範囲は型で保証し、実行時には検証しない
 
-- ステータス: 承認済み
+- ステータス: [ADR 0009](0009-validate-statically-where-possible-otherwise-at-runtime.md) により置き換え
 - 日付: 2026-10-24
 
 ## コンテキスト
