@@ -4,7 +4,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import * as fc from "fast-check";
 import { pointsOf } from "../points.ts";
-import { arbitrarySkittle, arbitraryThrow } from "./arbitraries.ts";
+import { arbitrarySkittle, arbitraryThrow, arbitraryThrowWithDuplicate } from "./arbitraries.ts";
 
 describe("pointsOf の性質", () => {
   describe("点数のルールと範囲", () => {
@@ -40,6 +40,18 @@ describe("pointsOf の性質", () => {
       fc.assert(
         fc.property(withShuffled, ({ knocked, shuffled }) => {
           assert(pointsOf(...shuffled) === pointsOf(...knocked));
+        }),
+      );
+    });
+  });
+  describe("重複は必ずエラー", () => {
+    it("同じ番号のスキットルが混ざると、位置にかかわらずその番号を含むエラーになる", () => {
+      fc.assert(
+        fc.property(arbitraryThrowWithDuplicate, ({ duplicated, knocked }) => {
+          assert.throws(() => pointsOf(...knocked), {
+            name: "Error",
+            message: `スキットル ${duplicated} が重複しています`,
+          });
         }),
       );
     });
