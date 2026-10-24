@@ -28,10 +28,12 @@ describe("scoreOf", () => {
       assert(scoreOf(first, miss, third) === 16);
     });
   });
-  describe("お題に書かれていないことの扱い", () => {
+  describe("倒れたスキットルは投てきのたびに立て直す", () => {
     it("異なる投てきで同じ番号のスキットルを倒してもよい", () => {
       assert(scoreOf([skittle(5)], [skittle(5)]) === 10);
     });
+  });
+  describe("お題に書かれていないことの扱い", () => {
     it("得点に上限はない", () => {
       const twelve = [skittle(12)];
       assert(scoreOf(twelve, twelve, twelve, twelve, twelve) === 60);
