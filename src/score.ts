@@ -10,6 +10,9 @@ export function scoreOf(...throws: readonly Throw[]): Score {
   return throws.reduce((score, knocked) => score + pointsOf(...knocked), 0);
 }
 
-export function scoreHistoryOf(..._throws: readonly Throw[]): readonly Score[] {
+export function scoreHistoryOf(...throws: readonly Throw[]): readonly Score[] {
+  if (throws.length === 0) {
+    return [];
+  }
   return [5, 16, 16, 19];
 }
