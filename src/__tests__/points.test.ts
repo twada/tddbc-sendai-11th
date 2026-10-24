@@ -25,4 +25,12 @@ describe("pointsOf", () => {
       assert(pointsOf() === 0);
     });
   });
+  describe("同じ番号のスキットルを重複して渡した場合", () => {
+    it("重複した番号を含むエラーになる", () => {
+      assert.throws(() => pointsOf(skittle(5), skittle(5)), {
+        name: "Error",
+        message: "スキットル 5 が重複しています",
+      });
+    });
+  });
 });
