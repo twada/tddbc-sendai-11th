@@ -7,9 +7,5 @@ export type Throw = readonly Skittle[];
 export type Score = number;
 
 export function scoreOf(...throws: readonly Throw[]): Score {
-  const [first] = throws;
-  if (first === undefined) {
-    return 0;
-  }
-  return pointsOf(...first);
+  return throws.reduce((score, knocked) => score + pointsOf(...knocked), 0);
 }
