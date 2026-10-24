@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { skittle } from "../skittle.ts";
+import { skittle, type Skittle } from "../skittle.ts";
 import { scoreOf } from "../score.ts";
 
 describe("scoreOf", () => {
@@ -18,6 +18,12 @@ describe("scoreOf", () => {
   describe("1本も倒さなかった投てき", () => {
     it("1回投てきして1本も倒さなかったら0点(投てき0回とは区別する)", () => {
       assert(scoreOf([]) === 0);
+    });
+    it("途中に1本も倒さなかった投てきが挟まってもよい", () => {
+      const first = [skittle(1), skittle(2), skittle(3), skittle(4), skittle(5)];
+      const miss: Skittle[] = [];
+      const third = [skittle(11)];
+      assert(scoreOf(first, miss, third) === 16);
     });
   });
 });
